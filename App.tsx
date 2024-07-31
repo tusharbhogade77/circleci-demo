@@ -28,7 +28,7 @@ const App = () => {
       />
 
       <Button
-        title="Say Hello"
+        title="Say Hello World"
         onPress={() => {
           setTimeout(() => {
             setMessage("Hello Tester");
