@@ -1,27 +1,32 @@
 version: 2.1
 
 jobs:
-  build:
+  build_android:
     working_directory: ~/repo
     docker:
-      - image: cimg/node:18.10.0  # Node.js version
+      - image: circleci/android:api-29-node
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-{{ checksum "yarn.lock" }}  # Cache dependencies based on lock file
+          key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
-          command: npm install
+          command: yarn install
       - save_cache:
-          key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
+          key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
-          name: Run tests
-          command: npm run test
+          name: Build Android
+          command: |
+            cd android
+            ./gradlew assembleRelease
+      - store_artifacts:
+          path: android/app/build/outputs/apk/release/
+          destination: release-apks
 
 workflows:
   version: 2
-  build_and_test:
+  build:
     jobs:
-      - build
+      - build_android
